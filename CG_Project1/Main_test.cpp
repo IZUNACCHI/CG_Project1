@@ -111,11 +111,12 @@ int main(int argc, char** argv)
 	Object object("resources/objects/untitled.obj", objects, objectCount, "resources/textures/container.jpg");
 	objects.push_back(object);
 
-	Object cube("resources/objects/box.obj", objects, objectCount, "resources/textures/DefaultMaterial_Base_color.png");
+	Object cube("resources/objects/cube.obj", objects, objectCount, "resources/textures/awesomeface.png");
 	objects.push_back(cube);
 	
 	std::vector<GLuint> VAOs;
 	VAOs.reserve(objectCount);
+
 	size_t vbo_size = 0;
 	size_t ibo_size = 0;
 
@@ -138,12 +139,14 @@ int main(int argc, char** argv)
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vbo_size * sizeof(float), 0, GL_STATIC_DRAW);
 
+	size_t vertexbufferoffset = 0;
 	for (unsigned int i = 0; i < objectCount; i++)
 	{
 		std::cout << i << std::endl;
-		glBufferSubData(GL_ARRAY_BUFFER, i == 0 ? 0 : objects[i-1].vertexBufferSize() * sizeof(float),	// offset
+		glBufferSubData(GL_ARRAY_BUFFER, vertexbufferoffset * sizeof(float),	// offset
 											objects[i].vertexBufferSize() * sizeof(float),				// size
 												objects[i].vertices());									// data
+		vertexbufferoffset += objects[i].vertexBufferSize();
 	}
 
 	GLuint ibo;
@@ -151,34 +154,34 @@ int main(int argc, char** argv)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size * sizeof(unsigned int), 0, GL_STATIC_DRAW);
 
+	size_t indexbufferoffset = 0;
 	for (unsigned int i = 0; i < objectCount; i++)
 	{
-		glBufferSubData(GL_ARRAY_BUFFER, i == 0 ? 0 : objects[i - 1].indexBufferSize() * sizeof(unsigned int), 
+		glBufferSubData(GL_ARRAY_BUFFER, indexbufferoffset * sizeof(unsigned int), 
 											objects[i].indexBufferSize() * sizeof(unsigned int),
 											objects[i].indices());
+		indexbufferoffset += objects[i].indexBufferSize();
 	}
 
+	vertexbufferoffset = 0;
+	indexbufferoffset = 0;
 	for (unsigned int i = 0; i < objectCount; i++)
 	{
 		glGenVertexArrays(1, &VAOs[i]);
 		glBindVertexArray(VAOs[i]);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-		phongProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
-											(void*) (i == 0 ? 0 : objects[i - 1].vertexBufferSize() * sizeof(float)));
-		phongProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
-											(void*)( i == 0 ? 3 * sizeof(float) : (objects[i - 1].vertexBufferSize() * sizeof(float)) + (3 * sizeof(float))));
-		phongProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
-											(void*)(i == 0 ? 5 * sizeof(float) : (objects[i - 1].vertexBufferSize() * sizeof(float)) + (5 * sizeof(float))));
+		phongProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) ((vertexbufferoffset * sizeof(float))));
+		phongProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) ((vertexbufferoffset * sizeof(float)) + (3 * sizeof(float))));
+		phongProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) ((vertexbufferoffset * sizeof(float)) + (5 * sizeof(float))));
 
-		gouraudProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
-											 (void*)(i == 0 ? 0 : objects[i - 1].vertexBufferSize() * sizeof(float)));
-		gouraudProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
-											 (void*)(i == 0 ? 3 * sizeof(float) : (objects[i - 1].vertexBufferSize() * sizeof(float)) + (3 * sizeof(float))));
-		gouraudProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 
-											 (void*)(i == 0 ? 5 * sizeof(float) : (objects[i - 1].vertexBufferSize() * sizeof(float)) + (5 * sizeof(float))));
+		gouraudProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) ((vertexbufferoffset * sizeof(float))));
+		gouraudProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) ((vertexbufferoffset * sizeof(float)) + (3 * sizeof(float))));
+		gouraudProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) ((vertexbufferoffset * sizeof(float)) + (5 * sizeof(float))));
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+		vertexbufferoffset += objects[i].vertexBufferSize();
 	}
 	
 	stbi_set_flip_vertically_on_load(true);
@@ -454,8 +457,7 @@ int main(int argc, char** argv)
 			gouraudProgram.setMat4("projection", projection);
 		}
 
-		//added this in order to use a second vao for the light
-
+		indexbufferoffset = 0;
 		for (unsigned int i = 0; i < objectCount; i++)
 		{
 			glBindVertexArray(VAOs[i]);
@@ -472,8 +474,10 @@ int main(int argc, char** argv)
 				gouraudProgram.setMat4("model", objects[i].model());
 			}
 
-			glDrawElements(GL_TRIANGLES, objects[i].indexBufferSize(), GL_UNSIGNED_INT, (void*)(i == 0 ? 0 : objects[i - 1].indexBufferSize() * sizeof(unsigned int)));
+			glDrawElements(GL_TRIANGLES, objects[i].indexBufferSize(), GL_UNSIGNED_INT, (void*)(indexbufferoffset * sizeof(unsigned int)));
 			glBindVertexArray(0);
+
+			indexbufferoffset += objects[i].indexBufferSize();
 		}
 
 		//drew the light

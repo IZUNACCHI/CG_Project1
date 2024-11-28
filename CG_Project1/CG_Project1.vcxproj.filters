@@ -36,10 +36,13 @@
     <ClCompile Include="vboindexer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="object_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="object_class.cpp">
+    <ClCompile Include="loader_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="object_class.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="loader_texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "vboindexer.hpp"
 #include "loader_wavefront.hpp"
+#include "loader_texture.hpp"
 
 #include <iostream>
 #include <vector>
@@ -100,7 +101,7 @@ int main(int argc, char** argv)
 	LoadObj("resources/objects/untitled.obj", vertices);
 
 	std::vector<float> verticesCube;
-	LoadObj("resources/objects/cube.obj", verticesCube);
+	LoadObj("resources/objects/box.obj", verticesCube);
 
 	std::vector<float> suz_vbo;
 	std::vector<unsigned int> suz_ibo;
@@ -172,49 +173,14 @@ int main(int argc, char** argv)
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// load and generate the texture
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("resources/textures/container.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-
+	LoadTexture("resources/textures/container.jpg");
 
 	GLuint texture2;
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
 
-	// set the texture wrapping/filtering options (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	LoadTexture("resources/textures/box_tex.png");
 
-
-	data = stbi_load("resources/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
 
 	glBindVertexArray(0);
 
@@ -251,10 +217,8 @@ int main(int argc, char** argv)
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-	phongProgram.setInt("ourTexture", 0);
-	phongProgram.setInt("ourTexture2", 1);
-	gouraudProgram.setInt("ourTexture", 0);
-	gouraudProgram.setInt("ourTexture2", 1);
+	phongProgram.setInt("Texture", 0);
+	gouraudProgram.setInt("Texture", 1);
 
 
 	// added a light
@@ -451,14 +415,12 @@ int main(int argc, char** argv)
 	
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
 		glBindVertexArray(vao);
 
 		view = camera.getViewMatrix();
 		projection = glm::perspective(glm::radians(camera.getFov()), screenWidth / screenHeight, 0.1f, 100.0f);
 		model = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians(-20.0f), glm::vec3(1.0, 0.0, 0.0));
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
 		
 		//set uniforms for new shaders and commented the ones from the old one
 		if (currentShader) {
@@ -509,6 +471,9 @@ int main(int argc, char** argv)
 
 		//draw second object 
 		glBindVertexArray(vao_cube);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(10.0f, 0.5f, 0.7f));

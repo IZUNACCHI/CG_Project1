@@ -3,24 +3,27 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glad/glad.h>
 #include <vector>
 
 class Object
 {
 public:
-	Object(const char* filename, std::vector<Object>& objects, unsigned int& objectCount);
-	Object(const char* filename, std::vector<Object>& objects, unsigned int& objectCount, glm::vec3& pos);
+	Object(const char* filename, std::vector<Object>& objects, unsigned int& objectCount, const char* texfile);
+	Object(const char* filename, std::vector<Object>& objects, unsigned int& objectCount, const char* texfile, glm::vec3& pos);
 
-	inline void rotate_x(float& rad);
-	inline void rotate_y(float& rad);
-	inline void rotate_z(float& rad);
-	inline void scale(glm::vec3& scale);
+	void rotate_x(float& rad);
+	void rotate_y(float& rad);
+	void rotate_z(float& rad);
+	void scale(glm::vec3& scale);
 
-	inline glm::mat4 model();
-	inline size_t vertexBufferSize();
-	inline float* vertices();
-	inline size_t indexBufferSize();
-	inline unsigned int* indices();
+	glm::mat4 model();
+	size_t vertexBufferSize();
+	float* vertices();
+	size_t indexBufferSize();
+	unsigned int* indices();
+
+	const char* texture();
 	
 	~Object() {};
 
@@ -29,4 +32,5 @@ private:
 	std::vector<float> in_vertices;
 	std::vector<float> out_vertices;
 	std::vector<unsigned int> out_indices;
+	const char* m_texture;
 };

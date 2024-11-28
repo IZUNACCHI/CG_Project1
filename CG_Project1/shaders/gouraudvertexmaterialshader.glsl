@@ -11,8 +11,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform sampler2D ourTexture;
-uniform sampler2D ourTexture2;
+uniform sampler2D Texture;
 
 uniform float ambientCoefficient;
 uniform float diffuseCoefficient;
@@ -26,15 +25,12 @@ uniform vec3 diffuseColor;
 uniform vec3 specularColor;
 
 // outputs
-
 out vec4 color;
 
 void main()
 {
 	//texture
-	vec4 colTex1 = texture(ourTexture, texCoord);
-	vec4 colTex2 = texture(ourTexture2, texCoord);
-	color = mix(colTex1, colTex2, 0.5);
+	color = texture(Texture, texCoord);
 
 	//vertex positions
 	vec3 vertPos = vec3(model * vec4(position, 1.0));

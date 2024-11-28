@@ -10,8 +10,7 @@ out vec4 outColor;
 uniform vec3 viewPos;
 uniform vec3 lightPos;  
 
-uniform sampler2D ourTexture;
-uniform sampler2D ourTexture2;
+uniform sampler2D Texture;
 
 uniform float ambientCoefficient;
 uniform float diffuseCoefficient;
@@ -28,9 +27,7 @@ uniform vec3 specularColor;
 void main()
 {
 	//texture
-	vec4 colTex1 = texture(ourTexture, TexCoord);
-	vec4 colTex2 = texture(ourTexture2, TexCoord);
-	outColor = mix(colTex1, colTex2, 0.5);
+	outColor = texture(Texture, TexCoord);
 		
 	//diffuse
 	vec3 norm = normalize(Normal);

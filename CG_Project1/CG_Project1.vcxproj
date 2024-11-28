@@ -136,8 +136,9 @@
     <ClCompile Include="backup.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="loader_texture.cpp" />
     <ClCompile Include="loader_wavefront.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Main_test.cpp" />
     <ClCompile Include="object_class.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stbImage.cpp" />
@@ -145,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="loader_texture.hpp" />
     <ClInclude Include="loader_wavefront.hpp" />
     <ClInclude Include="object_class.hpp" />
     <ClInclude Include="shader.h" />
