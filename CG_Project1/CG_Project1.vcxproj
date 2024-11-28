@@ -138,7 +138,6 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="loader_wavefront.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Main_test.cpp" />
     <ClCompile Include="object_class.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stbImage.cpp" />
