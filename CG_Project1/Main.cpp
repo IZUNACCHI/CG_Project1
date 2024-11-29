@@ -23,9 +23,6 @@ int main(int argc, char** argv)
 	float screenWidth = 800;
 	float screenHeight = 600;
 
-	float centerX = screenWidth / 2.0f;
-	float centerY = screenHeight / 2.0f;
-
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -229,7 +226,7 @@ int main(int argc, char** argv)
 	glm::vec3 ambientColor(0.2f, 0.1f, 0.0f);
 	glm::vec3 diffuseColor(0.8f, 0.4f, 0.0f);
 	glm::vec3 specularColor(1.0f, 1.0f, 1.0f);
-	float shinyAmount = 1.0f;
+	float shinyAmount = 10.0f;
 	float ambientCoefficient = 1.0f;
 	float diffuseCoefficient = 1.0f;
 	float specularCoefficient = 1.0f;
@@ -241,7 +238,6 @@ int main(int argc, char** argv)
 	float lastFrameTime = start; // Time of last frame
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 	bool isRunning = true;
 
@@ -496,11 +492,6 @@ int main(int argc, char** argv)
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glBindVertexArray(0);
-
-
-		glBindVertexArray(0);
-		
-
 
 		SDL_GL_SwapWindow(window);
 	}

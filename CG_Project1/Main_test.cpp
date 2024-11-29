@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 	size_t indexbufferoffset = 0;
 	for (unsigned int i = 0; i < objectCount; i++)
 	{
-		glBufferSubData(GL_ARRAY_BUFFER, indexbufferoffset * sizeof(unsigned int), 
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexbufferoffset * sizeof(unsigned int), 
 											objects[i].indexBufferSize() * sizeof(unsigned int),
 											objects[i].indices());
 		indexbufferoffset += objects[i].indexBufferSize();
@@ -232,7 +232,7 @@ int main(int argc, char** argv)
 	glm::vec3 ambientColor(0.2f, 0.1f, 0.0f);
 	glm::vec3 diffuseColor(0.8f, 0.4f, 0.0f);
 	glm::vec3 specularColor(1.0f, 1.0f, 1.0f);
-	float shinyAmount = 1.0f;
+	float shinyAmount = 10.0f;
 	float ambientCoefficient = 1.0f;
 	float diffuseCoefficient = 1.0f;
 	float specularCoefficient = 1.0f;
@@ -464,7 +464,6 @@ int main(int argc, char** argv)
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, textures[i]);
-
 			if (currentShader)
 			{
 				phongProgram.setMat4("model", objects[i].model());

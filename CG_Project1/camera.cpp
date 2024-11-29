@@ -63,10 +63,10 @@ void Camera::updateCameraVectors()
 	front = glm::normalize(front);
 
 	//project front along the horizontal plane
-	hfront = front * glm::vec3(1.0f, 0.0f, 1.0f);
+	hfront = glm::normalize(front * glm::vec3(1.0f, 0.0f, 1.0f));
 
-	right = glm::normalize(glm::cross(front, worldUp));
-	up = glm::normalize(glm::cross(right, front));
+	right = glm::normalize(glm::cross(hfront, worldUp));
+	up = glm::normalize(glm::cross(right, hfront));
 }
 
 void Camera::move(CameraMovement direction, float velocity)
