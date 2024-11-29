@@ -1,4 +1,3 @@
-
 #include <SDL.h>
 #include <glad/glad.h>
 
@@ -12,16 +11,16 @@
 #include "vboindexer.hpp"
 #include "loader_wavefront.hpp"
 #include "loader_texture.hpp"
+#include "object_class.hpp"
 
 #include <iostream>
 #include <vector>
-
-
 
 int main(int argc, char** argv)
 {
 	float screenWidth = 800;
 	float screenHeight = 600;
+
 
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -48,9 +47,13 @@ int main(int argc, char** argv)
 		return -2;
 	}
 
-	
+	Shader gouraudProgram("shaders/gouraudvertexmaterialshader.glsl", "shaders/gouraudfragmentmaterialshader.glsl");
+	Shader phongProgram("shaders/phongvertexmaterialshader.glsl", "shaders/phongfragmentmaterialshader.glsl");
+	Shader lightCubeProgram("shaders/lightvertex.glsl", "shaders/lightfragment.glsl");
 
-	// Added a cube to use as a light
+	bool currentShader = true; //default phong
+
+	// Vertices for the "lamp".
 	float lightVerts[] = {
 		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -95,95 +98,134 @@ int main(int argc, char** argv)
 		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 
+	std::vector<Object> objects;
+	unsigned int objectCount = 0;
+
+	std::vector<GLuint> textures;
+	unsigned int textureCount = 0;
 
 	std::vector<float> vertices;
-	LoadObj("resources/objects/untitled.obj", vertices);
+	std::vector<unsigned int> indices;
 
-	std::vector<float> verticesCube;
-	LoadObj("resources/objects/box.obj", verticesCube);
+	// The only thing the user must do is initialize an "Object" and push it back into the vector of objects.
+	Object obj_floor("resources/objects/floor.obj", objects, objectCount, "resources/textures/floor.png");
+	objects.push_back(obj_floor);
 
-	std::vector<float> suz_vbo;
-	std::vector<unsigned int> suz_ibo;
-	IndexVBO(vertices, suz_vbo, suz_ibo);
+	Object obj_box("resources/objects/box.obj", objects, objectCount, "resources/textures/box.png");
+	objects.push_back(obj_box);
 
-	std::vector<float> cube_vbo;
-	std::vector<unsigned int> cube_ibo;
-	IndexVBO(verticesCube, cube_vbo, cube_ibo);
+	Object obj_boxg1("resources/objects/boxg1.obj", objects, objectCount, "resources/textures/box.png");
+	objects.push_back(obj_boxg1);
+
+	Object obj_boxg2("resources/objects/boxg2.obj", objects, objectCount, "resources/textures/box.png");
+	objects.push_back(obj_boxg2);
+
+	Object obj_boxg3("resources/objects/boxg3.obj", objects, objectCount, "resources/textures/box.png");
+	objects.push_back(obj_boxg3);
+
+	Object obj_boxg4("resources/objects/boxg4.obj", objects, objectCount, "resources/textures/box.png");
+	objects.push_back(obj_boxg4);
+
+	Object shelf("resources/objects/shelf.obj", objects, objectCount, "resources/textures/shelf.png");
+	objects.push_back(shelf);
+
+	Object shelfg1("resources/objects/shelfg1.obj", objects, objectCount, "resources/textures/shelf.png");
+	objects.push_back(shelfg1);
+
+	Object shelfg2("resources/objects/shelfg2.obj", objects, objectCount, "resources/textures/shelf.png");
+	objects.push_back(shelfg2);
+
+	Object shelfg3("resources/objects/shelfg3.obj", objects, objectCount, "resources/textures/shelf.png");
+	objects.push_back(shelfg3);
+
+	Object chair1("resources/objects/chair1.obj", objects, objectCount, "resources/textures/chair.png");
+	objects.push_back(chair1);
+
+	Object chair2("resources/objects/chair2.obj", objects, objectCount, "resources/textures/chair.png");
+	objects.push_back(chair2);
+
+	Object desk("resources/objects/desk.obj", objects, objectCount, "resources/textures/desk.png");
+	objects.push_back(desk);
+
+	Object deskB("resources/objects/deskB.obj", objects, objectCount, "resources/textures/deskB.png");
+	objects.push_back(deskB);
 
 
-	// added the new shaders
-	Shader gouraudProgram("shaders/gouraudvertexmaterialshader.glsl", "shaders/gouraudfragmentmaterialshader.glsl");
-	Shader phongProgram("shaders/phongvertexmaterialshader.glsl", "shaders/phongfragmentmaterialshader.glsl");
-	Shader lightCubeProgram("shaders/lightvertex.glsl", "shaders/lightfragment.glsl");
 
-	bool currentShader = true; //default phong
+	std::vector<GLuint> VAOs;
+	VAOs.reserve(objectCount);
 
+	size_t vbo_size = 0;
+	size_t ibo_size = 0;
 
-	GLuint vao;
-	GLuint vao_cube;
+	for (unsigned int i = 0; i < objectCount; i++)
+	{
+		vbo_size += objects[i].vertexBufferSize();
+		ibo_size += objects[i].indexBufferSize();
+
+		GLuint vao;
+		VAOs.push_back(vao);
+
+		GLuint texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		LoadTexture(objects[i].texture(), textures, textureCount);
+		textures.push_back(texture);
+	}
 
 	GLuint vbo;
 	glGenBuffers(1, &vbo); // Generate 1 vertex buffer object
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, (suz_vbo.size() + cube_vbo.size()) * sizeof(float), 0, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, suz_vbo.size() * sizeof(float), suz_vbo.data());
-	glBufferSubData(GL_ARRAY_BUFFER, suz_vbo.size() * sizeof(float), cube_vbo.size() * sizeof(float), cube_vbo.data());
+	glBufferData(GL_ARRAY_BUFFER, vbo_size * sizeof(float), 0, GL_STATIC_DRAW);
+
+	size_t vertexbufferoffset = 0;
+	for (unsigned int i = 0; i < objectCount; i++)
+	{
+		std::cout << i << std::endl;
+		glBufferSubData(GL_ARRAY_BUFFER, vertexbufferoffset * sizeof(float),	// offset
+			objects[i].vertexBufferSize() * sizeof(float),				// size
+			objects[i].vertices());									// data
+		vertexbufferoffset += objects[i].vertexBufferSize();
+	}
 
 	GLuint ibo;
 	glGenBuffers(1, &ibo); // Generate 1 element buffer object
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (suz_ibo.size() + cube_ibo.size()) * sizeof(unsigned int), 0, GL_STATIC_DRAW);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, suz_ibo.size() * sizeof(unsigned int), suz_ibo.data());
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, suz_ibo.size() * sizeof(unsigned int), cube_ibo.size() * sizeof(unsigned int), cube_ibo.data());
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo_size * sizeof(unsigned int), 0, GL_STATIC_DRAW);
 
-	glGenVertexArrays(1, &vao);
-	glGenVertexArrays(1, &vao_cube);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	size_t indexbufferoffset = 0;
+	for (unsigned int i = 0; i < objectCount; i++)
+	{
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexbufferoffset * sizeof(unsigned int),
+			objects[i].indexBufferSize() * sizeof(unsigned int),
+			objects[i].indices());
+		indexbufferoffset += objects[i].indexBufferSize();
+	}
 
-	phongProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	phongProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	phongProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-	
-	gouraudProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	gouraudProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	gouraudProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	vertexbufferoffset = 0;
+	indexbufferoffset = 0;
+	for (unsigned int i = 0; i < objectCount; i++)
+	{
+		glGenVertexArrays(1, &VAOs[i]);
+		glBindVertexArray(VAOs[i]);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	glBindVertexArray(vao_cube);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	
-	phongProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(suz_vbo.size() * sizeof(float)));
-	phongProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((suz_vbo.size() * sizeof(float)) + (3 * sizeof(float))));
-	phongProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((suz_vbo.size() * sizeof(float)) + (5 * sizeof(float))));
-	
-	gouraudProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(suz_vbo.size() * sizeof(float)));
-	gouraudProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((suz_vbo.size() * sizeof(float)) + (3 * sizeof(float))));
-	gouraudProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((suz_vbo.size() * sizeof(float)) + (5 * sizeof(float))));
+		phongProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((vertexbufferoffset * sizeof(float))));
+		phongProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((vertexbufferoffset * sizeof(float)) + (3 * sizeof(float))));
+		phongProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((vertexbufferoffset * sizeof(float)) + (5 * sizeof(float))));
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	
-	
+		gouraudProgram.setVertexAttribPointer("position", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((vertexbufferoffset * sizeof(float))));
+		gouraudProgram.setVertexAttribPointer("texCoord", 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((vertexbufferoffset * sizeof(float)) + (3 * sizeof(float))));
+		gouraudProgram.setVertexAttribPointer("normal", 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)((vertexbufferoffset * sizeof(float)) + (5 * sizeof(float))));
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+		vertexbufferoffset += objects[i].vertexBufferSize();
+	}
 
 	stbi_set_flip_vertically_on_load(true);
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	LoadTexture("resources/textures/container.jpg");
-
-	GLuint texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	LoadTexture("resources/textures/box_tex.png");
-
-
-	glBindVertexArray(0);
-
-	// added a vao/vbo for the light 
+	// added a vao/vbo for the light start
 	GLuint vaoLightCube;
 	glGenVertexArrays(1, &vaoLightCube);
 	glBindVertexArray(vaoLightCube);
@@ -196,7 +238,6 @@ int main(int argc, char** argv)
 
 	// added setVertex for the new light shader
 	lightCubeProgram.setVertexAttribPointer("aPos", 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glBindVertexArray(0);
 
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
@@ -204,7 +245,7 @@ int main(int argc, char** argv)
 	view = camera.getViewMatrix();
 
 	glm::mat4 model(1.0f);
-	model = glm::rotate(model, glm::radians(-20.0f), glm::vec3(1.0, 0.0, 0.0));
+	model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
 
 	// added a model for the light to follow
 	glm::mat4 model2(1.0f);
@@ -216,17 +257,17 @@ int main(int argc, char** argv)
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	phongProgram.setInt("Texture", 0);
-	gouraudProgram.setInt("Texture", 1);
+	gouraudProgram.setInt("Texture", 0);
 
 
 	// added a light
-	glm::vec3 lightPos(0.0f, 2.0f, 0.0f);
+	glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
 
 	//added variables to simulate materials
 	glm::vec3 ambientColor(0.2f, 0.1f, 0.0f);
 	glm::vec3 diffuseColor(0.8f, 0.4f, 0.0f);
 	glm::vec3 specularColor(1.0f, 1.0f, 1.0f);
-	float shinyAmount = 10.0f;
+	float shinyAmount = 1.0f;
 	float ambientCoefficient = 1.0f;
 	float diffuseCoefficient = 1.0f;
 	float specularCoefficient = 1.0f;
@@ -238,6 +279,7 @@ int main(int argc, char** argv)
 	float lastFrameTime = start; // Time of last frame
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 	bool isRunning = true;
 
@@ -264,7 +306,7 @@ int main(int argc, char** argv)
 				camera.processMouseScroll(event.wheel.y);
 			}
 
-			
+
 		}
 		const Uint8* keyState = SDL_GetKeyboardState(nullptr);
 		camera.processKeyboardInput(keyState, deltaTime);
@@ -282,7 +324,7 @@ int main(int argc, char** argv)
 			lightPos = lightPos + glm::vec3(1.0f, 0.0f, 0.0f) * deltaTime;
 		}
 		if (keyState[SDL_SCANCODE_U]) {
-			lightPos = lightPos + glm::vec3(0.0f, -1.0f, 0.0f) * deltaTime;	
+			lightPos = lightPos + glm::vec3(0.0f, -1.0f, 0.0f) * deltaTime;
 		}
 		if (keyState[SDL_SCANCODE_O]) {
 			lightPos = lightPos + glm::vec3(0.0f, 1.0f, 0.0f) * deltaTime;
@@ -295,7 +337,7 @@ int main(int argc, char** argv)
 		if (keyState[SDL_SCANCODE_BACKSPACE]) {
 			currentShader = false; //swaps active shader to gouraund
 		}
-		
+
 		//material controls
 		//ambient
 		if (keyState[SDL_SCANCODE_KP_1]) {
@@ -317,7 +359,7 @@ int main(int argc, char** argv)
 			}
 			if (keyState[SDL_SCANCODE_B]) { //Blue
 				if (keyState[SDL_SCANCODE_UP]) {
-					if(ambientColor.z < 1.0f) ambientColor.z += 0.1f * deltaTime;
+					if (ambientColor.z < 1.0f) ambientColor.z += 0.1f * deltaTime;
 				}
 				if (keyState[SDL_SCANCODE_DOWN]) {
 					if (ambientColor.z > 0.0f) ambientColor.z -= 0.1f * deltaTime;
@@ -354,7 +396,7 @@ int main(int argc, char** argv)
 					if (diffuseColor.z < 1.0f) diffuseColor.z += 0.1f * deltaTime;
 				}
 				if (keyState[SDL_SCANCODE_DOWN]) {
-					if(diffuseColor.z > 0.0f) diffuseColor.z -= 0.1f * deltaTime;
+					if (diffuseColor.z > 0.0f) diffuseColor.z -= 0.1f * deltaTime;
 				}
 			}
 			//Coefficient
@@ -388,12 +430,12 @@ int main(int argc, char** argv)
 					if (specularColor.z < 1.0f) specularColor.z += 0.1f * deltaTime;
 				}
 				if (keyState[SDL_SCANCODE_DOWN]) {
-					if(specularColor.z > 0.0f) specularColor.z -= 0.1f * deltaTime;
+					if (specularColor.z > 0.0f) specularColor.z -= 0.1f * deltaTime;
 				}
 			}
 			//Coefficient
 			if (keyState[SDL_SCANCODE_RIGHT]) {
-				if(specularCoefficient < 1.0f) specularCoefficient += 0.1f * deltaTime;
+				if (specularCoefficient < 1.0f) specularCoefficient += 0.1f * deltaTime;
 			}
 			if (keyState[SDL_SCANCODE_LEFT]) {
 				if (specularCoefficient > 0.0f) specularCoefficient -= 0.1f * deltaTime;
@@ -402,7 +444,7 @@ int main(int argc, char** argv)
 		//shining
 		if (keyState[SDL_SCANCODE_KP_0]) {
 			if (keyState[SDL_SCANCODE_UP]) {
-				if(shinyAmount < 32.0f) shinyAmount += 0.1f;
+				if (shinyAmount < 32.0f) shinyAmount += 0.1f;
 			}
 			if (keyState[SDL_SCANCODE_DOWN]) {
 				if (shinyAmount > 0.0f) shinyAmount -= 0.1f * deltaTime;
@@ -410,15 +452,9 @@ int main(int argc, char** argv)
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glBindVertexArray(vao);
-
 		view = camera.getViewMatrix();
 		projection = glm::perspective(glm::radians(camera.getFov()), screenWidth / screenHeight, 0.1f, 100.0f);
-		model = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-		
+
 		//set uniforms for new shaders and commented the ones from the old one
 		if (currentShader) {
 			phongProgram.use();
@@ -434,7 +470,6 @@ int main(int argc, char** argv)
 			phongProgram.setVec3("specularColor", specularColor);
 
 			phongProgram.setMat4("view", view);
-			phongProgram.setMat4("model", model);
 			phongProgram.setMat4("projection", projection);
 
 		}
@@ -451,33 +486,35 @@ int main(int argc, char** argv)
 
 			gouraudProgram.setVec3("ambientColor", ambientColor);
 			gouraudProgram.setVec3("diffuseColor", diffuseColor);
-			gouraudProgram.setVec3("specularColor",specularColor);
+			gouraudProgram.setVec3("specularColor", specularColor);
 
 			gouraudProgram.setMat4("view", view);
-			gouraudProgram.setMat4("model", model);
 			gouraudProgram.setMat4("projection", projection);
 		}
 
-		//added this in order to use a second vao for the light
-		glBindVertexArray(vao);
-
-		// draw suzanne
-		glDrawElements(GL_TRIANGLES, suz_ibo.size(), GL_UNSIGNED_INT, 0);
-
-		glBindVertexArray(0);
-
-		//draw second object 
-		glBindVertexArray(vao_cube);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture2);
 
+		indexbufferoffset = 0;
+		for (unsigned int i = 0; i < objectCount; i++)
+		{
+			glBindVertexArray(VAOs[i]);
 
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(10.0f, 0.5f, 0.7f));
-		phongProgram.setMat4("model", model);
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
 
-		glDrawElements(GL_TRIANGLES, cube_ibo.size(), GL_UNSIGNED_INT, (void*)(suz_ibo.size() * sizeof(unsigned int)));
+			if (currentShader)
+			{
+				phongProgram.setMat4("model", objects[i].model());
+			}
+			else
+			{
+				gouraudProgram.setMat4("model", objects[i].model());
+			}
 
+			glDrawElements(GL_TRIANGLES, objects[i].indexBufferSize(), GL_UNSIGNED_INT, (void*)(indexbufferoffset * sizeof(unsigned int)));
+			glBindVertexArray(0);
+
+			indexbufferoffset += objects[i].indexBufferSize();
+		}
 
 		//drew the light
 		lightCubeProgram.use();

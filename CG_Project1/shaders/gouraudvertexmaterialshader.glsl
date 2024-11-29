@@ -25,6 +25,7 @@ uniform vec3 diffuseColor;
 uniform vec3 specularColor;
 
 // outputs
+
 out vec4 color;
 
 void main()
@@ -35,7 +36,7 @@ void main()
 	//vertex positions
 	vec3 vertPos = vec3(model * vec4(position, 1.0));
 	gl_Position = projection * view * vec4(vertPos, 1.0);
-	
+
 	//diffuse
 	vec3 norm = normalize(normal);
 	vec3 lightDir = normalize(lightPos - vertPos);

@@ -30,14 +30,14 @@ void Camera::processMouseInput(SDL_Event ev, float deltaTime) {
 
 	float xoffset = ev.motion.xrel;
 	float yoffset = -ev.motion.yrel; // reversed since y-coordinates range from bottom to top
-	
+
 	float sensitivity = 0.05f;
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
-	
+
 	yaw += xoffset;
 	pitch += yoffset;
-	
+
 	if (pitch > 89.0f)
 		pitch = 89.0f;
 	if (pitch < -89.0f)
@@ -71,7 +71,7 @@ void Camera::updateCameraVectors()
 
 void Camera::move(CameraMovement direction, float velocity)
 {
-	if (direction == FORWARD) position += hfront* velocity;
+	if (direction == FORWARD) position += hfront * velocity;
 	if (direction == BACKWARD) position -= hfront * velocity;
 	if (direction == LEFT) position -= right * velocity;
 	if (direction == RIGHT) position += right * velocity;

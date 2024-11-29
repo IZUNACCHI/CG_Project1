@@ -18,69 +18,66 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stbImage.cpp">
+    <ClCompile Include="sources\stbImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
+    <ClCompile Include="sources\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="backup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
+    <ClCompile Include="sources\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="loader_wavefront.cpp">
+    <ClCompile Include="sources\vboindexer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vboindexer.cpp">
+    <ClCompile Include="sources\loader_wavefront.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="object_class.cpp">
+    <ClCompile Include="sources\object_class.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="loader_texture.cpp">
+    <ClCompile Include="sources\loader_texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main_test.cpp">
+    <ClCompile Include="sources\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="headers\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
+    <ClInclude Include="headers\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
+    <ClInclude Include="headers\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loader_wavefront.hpp">
+    <ClInclude Include="headers\vboindexer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vboindexer.hpp">
+    <ClInclude Include="headers\loader_wavefront.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="object_class.hpp">
+    <ClInclude Include="headers\object_class.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="loader_texture.hpp">
+    <ClInclude Include="headers\loader_texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragmentshader.glsl" />
-    <None Include="shaders\vertexshader.glsl" />
-    <None Include="shaders\phongfragmentmaterialshader.glsl" />
-    <None Include="shaders\phongvertexmaterialshader.glsl" />
-    <None Include="shaders\lightvertex.glsl" />
     <None Include="shaders\lightfragment.glsl" />
-    <None Include="shaders\gouraudvertexmaterialshader.glsl" />
+    <None Include="shaders\lightvertex.glsl" />
     <None Include="shaders\phongfragmentshader.glsl" />
     <None Include="shaders\phongvertexshader.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="shaders\gouraudfragmentmaterialshader.glsl" />
+    <None Include="shaders\gouraudfragmentmaterialshader.glsl" />
+    <None Include="shaders\gouraudvertexmaterialshader.glsl" />
+    <None Include="shaders\phongfragmentmaterialshader.glsl" />
+    <None Include="shaders\phongvertexmaterialshader.glsl" />
+    <None Include="SDL2.dll" />
   </ItemGroup>
 </Project>

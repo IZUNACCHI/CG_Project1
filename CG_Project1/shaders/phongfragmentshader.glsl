@@ -7,8 +7,7 @@ in vec3 FragPos;
 
 out vec4 outColor;
 
-uniform sampler2D ourTexture;
-uniform sampler2D ourTexture2;
+uniform sampler2D Texture;
 
 
 uniform vec3 viewPos; 
@@ -21,9 +20,7 @@ uniform vec3 objectColor;
 void main()
 {
 	//texture
-	vec4 colTex1 = texture(ourTexture, TexCoord);
-	vec4 colTex2 = texture(ourTexture2, TexCoord);
-	outColor = mix(colTex1, colTex2, 0.5);
+	outColor = texture(Texture, TexCoord);
 
 	//ambient
 	float ambientStrength = 0.2;

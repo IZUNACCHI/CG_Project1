@@ -6,16 +6,18 @@
 #include <glad/glad.h>
 #include <vector>
 
+#include <iostream>
+
 class Object
 {
 public:
 	Object(const char* filename, std::vector<Object>& objects, unsigned int& objectCount, const char* texfile);
-	Object(const char* filename, std::vector<Object>& objects, unsigned int& objectCount, const char* texfile, glm::vec3& pos);
 
-	void rotate_x(float& rad);
-	void rotate_y(float& rad);
-	void rotate_z(float& rad);
-	void scale(glm::vec3& scale);
+	void translate(float pos_x, float pos_y, float pos_z);
+	void rotate_y(float rad);
+	void rotate_x(float rad);
+	void rotate_z(float rad);
+	void scale(float scale_x, float scale_y, float scale_z);
 
 	glm::mat4 model();
 	size_t vertexBufferSize();

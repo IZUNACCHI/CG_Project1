@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\GLM\include;$(SolutionDir)\Headers;%(AdditionalIncludeDirectories);$(SolutionDir)Vendor\SDL2\include;$(SolutionDir)Vendor\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\GLM\include;$(SolutionDir)CG_Project1\headers;%(AdditionalIncludeDirectories);$(SolutionDir)Vendor\SDL2\include;$(SolutionDir)Vendor\GLAD\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\GLM\include;$(SolutionDir)\Headers;$(SolutionDir)Vendor\SDL2\include;$(SolutionDir)Vendor\GLAD\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\GLM\include;$(SolutionDir)CG_Project1\headers;$(SolutionDir)Vendor\SDL2\include;$(SolutionDir)Vendor\GLAD\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,38 +134,35 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="backup.cpp" />
-    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="sources\loader_texture.cpp" />
+    <ClCompile Include="sources\camera.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="loader_texture.cpp" />
-    <ClCompile Include="loader_wavefront.cpp" />
-    <ClCompile Include="Main_test.cpp" />
-    <ClCompile Include="object_class.cpp" />
-    <ClCompile Include="shader.cpp" />
-    <ClCompile Include="stbImage.cpp" />
-    <ClCompile Include="vboindexer.cpp" />
+    <ClCompile Include="sources\loader_wavefront.cpp" />
+    <ClCompile Include="sources\Main.cpp" />
+    <ClCompile Include="sources\object_class.cpp" />
+    <ClCompile Include="sources\shader.cpp" />
+    <ClCompile Include="sources\stbImage.cpp" />
+    <ClCompile Include="sources\vboindexer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="loader_texture.hpp" />
-    <ClInclude Include="loader_wavefront.hpp" />
-    <ClInclude Include="object_class.hpp" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="vboindexer.hpp" />
+    <ClInclude Include="headers\camera.h" />
+    <ClInclude Include="headers\object_class.hpp" />
+    <ClInclude Include="headers\shader.h" />
+    <ClInclude Include="headers\stb_image.h" />
+    <ClInclude Include="headers\loader_texture.hpp" />
+    <ClInclude Include="headers\vboindexer.hpp" />
+    <ClInclude Include="headers\loader_wavefront.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="SDL2.dll" />
+    <None Include="shaders\gouraudfragmentmaterialshader.glsl" />
     <None Include="shaders\gouraudvertexmaterialshader.glsl" />
     <None Include="shaders\lightfragment.glsl" />
     <None Include="shaders\lightvertex.glsl" />
     <None Include="shaders\phongfragmentmaterialshader.glsl" />
-    <None Include="shaders\fragmentshader.glsl" />
     <None Include="shaders\phongfragmentshader.glsl" />
     <None Include="shaders\phongvertexmaterialshader.glsl" />
     <None Include="shaders\phongvertexshader.glsl" />
-    <None Include="shaders\vertexshader.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="shaders\gouraudfragmentmaterialshader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
