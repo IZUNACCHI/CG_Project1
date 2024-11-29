@@ -2,7 +2,7 @@
 
 
 Camera::Camera(glm::vec3 cameraPosition, glm::vec3 up, float cameraYaw, float cameraPitch)
-	: front(glm::vec3(0.f, 0.f, -1.f)), movementSpeed(2.5f), mouseSensitivity(0.1f), fov(45.f)
+	: front(glm::vec3(0.f, 0.f, -1.f)), movementSpeed(2.5f), mouseSensitivity(0.1f), fov(45.f), hfront(glm::vec3(0.f, 0.f, -1.f))
 {
 	position = cameraPosition;
 	worldUp = up;
@@ -61,14 +61,18 @@ void Camera::updateCameraVectors()
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
 	front = glm::normalize(front);
+
+	//project front along the horizontal plane
+	hfront = front * glm::vec3(1.0f, 0.0f, 1.0f);
+
 	right = glm::normalize(glm::cross(front, worldUp));
 	up = glm::normalize(glm::cross(right, front));
 }
 
 void Camera::move(CameraMovement direction, float velocity)
 {
-	if (direction == FORWARD) position += front * velocity;
-	if (direction == BACKWARD) position -= front * velocity;
+	if (direction == FORWARD) position += hfront* velocity;
+	if (direction == BACKWARD) position -= hfront * velocity;
 	if (direction == LEFT) position -= right * velocity;
 	if (direction == RIGHT) position += right * velocity;
 	if (direction == UP) position += up * velocity;

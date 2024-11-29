@@ -23,6 +23,8 @@ int main(int argc, char** argv)
 	float screenWidth = 800;
 	float screenHeight = 600;
 
+	float centerX = screenWidth / 2.0f;
+	float centerY = screenHeight / 2.0f;
 
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -184,7 +186,7 @@ int main(int argc, char** argv)
 
 	glBindVertexArray(0);
 
-	// added a vao/vbo for the light start
+	// added a vao/vbo for the light 
 	GLuint vaoLightCube;
 	glGenVertexArrays(1, &vaoLightCube);
 	glBindVertexArray(vaoLightCube);
@@ -193,7 +195,6 @@ int main(int argc, char** argv)
 	glGenBuffers(1, &vboLightCube); // Generate 1 vertex buffer object
 	glBindBuffer(GL_ARRAY_BUFFER, vboLightCube);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(lightVerts), lightVerts, GL_STATIC_DRAW);
-
 
 
 	// added setVertex for the new light shader
@@ -412,7 +413,7 @@ int main(int argc, char** argv)
 			}
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(vao);
@@ -495,6 +496,11 @@ int main(int argc, char** argv)
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glBindVertexArray(0);
+
+
+		glBindVertexArray(0);
+		
+
 
 		SDL_GL_SwapWindow(window);
 	}
