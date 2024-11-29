@@ -158,6 +158,7 @@ int main(int argc, char** argv)
 	size_t vbo_size = 0;
 	size_t ibo_size = 0;
 
+	stbi_set_flip_vertically_on_load(true);
 	for (unsigned int i = 0; i < objectCount; i++)
 	{
 		vbo_size += objects[i].vertexBufferSize();
@@ -223,7 +224,6 @@ int main(int argc, char** argv)
 		vertexbufferoffset += objects[i].vertexBufferSize();
 	}
 
-	stbi_set_flip_vertically_on_load(true);
 
 	// added a vao/vbo for the light start
 	GLuint vaoLightCube;
@@ -239,7 +239,7 @@ int main(int argc, char** argv)
 	// added setVertex for the new light shader
 	lightCubeProgram.setVertexAttribPointer("aPos", 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 
-	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
+	Camera camera(glm::vec3(0.0f, 1.8f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f);
 
 	glm::mat4 view;
 	view = camera.getViewMatrix();

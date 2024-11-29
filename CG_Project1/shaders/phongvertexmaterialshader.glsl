@@ -16,6 +16,6 @@ void main()
 {
 	TexCoord = texCoord;
 	VertPos = vec3(model * vec4(position, 1.0));
-	Normal = normal;  
+	Normal = mat3(transpose(inverse(model))) * normal;  
 	gl_Position = projection * view * vec4(VertPos, 1.0);
 };

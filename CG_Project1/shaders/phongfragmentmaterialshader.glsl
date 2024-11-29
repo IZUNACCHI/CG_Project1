@@ -31,7 +31,7 @@ void main()
 		
 	//diffuse
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(lightPos - VertPos); 
+	vec3 lightDir = normalize(lightPos - VertPos); //direction light comes from
 	float diffuse = max(dot(norm, lightDir), 0.0); 
 
 	//specular
