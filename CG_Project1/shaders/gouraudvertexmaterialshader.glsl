@@ -40,14 +40,14 @@ void main()
 	//diffuse
 	vec3 norm = normalize(normal);
 	vec3 lightDir = normalize(lightPos - vertPos);
-	float diffuse = max(dot(normal, lightDir), 0.0);
+	float diffuse = max(dot(norm, lightDir), 0.0);
 
 	//specular
 	float specular = 0.0;
-	if(diffuse > 0.0){  //if light on the correct side
+	if(diffuse < 0.0){  //if light on the correct side
 		vec3 viewDir = normalize(viewPos - vertPos); //vector to viewer
 		vec3 reflectDir = reflect(-lightDir, norm);  //reflected light
-		float specAngle = max(dot(viewDir, reflectDir), 0.0);
+		float specAngle = max(dot(reflectDir, viewDir), 0.0);
 		specular = pow(specAngle, shinyAmount);
 	}
 

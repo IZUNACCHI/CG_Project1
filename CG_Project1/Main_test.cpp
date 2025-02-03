@@ -107,8 +107,6 @@ int main(int argc, char** argv)
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
 
-	stbi_set_flip_vertically_on_load(true);
-
 	// The only thing the user must do is initialize an "Object" and push it back into the vector of objects.
 	Object obj_floor("resources/objects/floor.obj", objects, objectCount, "resources/textures/floor.png");
 	objects.push_back(obj_floor);
@@ -180,8 +178,6 @@ int main(int argc, char** argv)
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vbo_size * sizeof(float), 0, GL_STATIC_DRAW);
 
-	
-
 	size_t vertexbufferoffset = 0;
 	for (unsigned int i = 0; i < objectCount; i++)
 	{
@@ -227,7 +223,7 @@ int main(int argc, char** argv)
 		vertexbufferoffset += objects[i].vertexBufferSize();
 	}
 
-	
+	stbi_set_flip_vertically_on_load(true);
 
 	// added a vao/vbo for the light start
 	GLuint vaoLightCube;
@@ -268,8 +264,8 @@ int main(int argc, char** argv)
 	glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
 
 	//added variables to simulate materials
-	glm::vec3 ambientColor(0.1f, 0.1f, 0.1f);
-	glm::vec3 diffuseColor(0.96f, 0.92f, 0.8f);
+	glm::vec3 ambientColor(0.2f, 0.1f, 0.0f);
+	glm::vec3 diffuseColor(0.8f, 0.4f, 0.0f);
 	glm::vec3 specularColor(1.0f, 1.0f, 1.0f);
 	float shinyAmount = 1.0f;
 	float ambientCoefficient = 1.0f;
